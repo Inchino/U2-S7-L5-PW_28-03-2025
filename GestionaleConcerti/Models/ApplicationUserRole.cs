@@ -5,11 +5,10 @@ namespace GestionaleConcerti.Models
 {
     public class ApplicationUserRole : IdentityUserRole<string>
     {
-        public Guid UserId { get; set; }
-        public Guid RoleId { get; set; }
-        [ForeignKey("UserId")]
+        [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
-        [ForeignKey("RoleId")]
+
+        [ForeignKey(nameof(RoleId))]
         public ApplicationRole Role { get; set; }
     }
 }

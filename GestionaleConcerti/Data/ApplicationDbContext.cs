@@ -31,12 +31,12 @@ namespace GestionaleConcerti.Data
                 userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
 
                 userRole.HasOne(ur => ur.User)
-                        .WithMany(u => u.ApplicationUserRole)
+                        .WithMany(u => u.ApplicationUserRoles)
                         .HasForeignKey(ur => ur.UserId)
                         .IsRequired();
 
                 userRole.HasOne(ur => ur.Role)
-                        .WithMany(r => r.ApplicationUserRole)
+                        .WithMany(r => r.ApplicationUserRoles)
                         .HasForeignKey(ur => ur.RoleId)
                         .IsRequired();
             });
