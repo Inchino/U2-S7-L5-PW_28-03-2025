@@ -151,3 +151,4 @@ C:\Users\aless\source\repos\Inchino\U2-S7-L5-PW_28-03-2025\GestionaleConcerti\ob
 C:\Users\aless\source\repos\Inchino\U2-S7-L5-PW_28-03-2025\GestionaleConcerti\obj\Debug\net8.0\GestionaleConcerti.pdb
 C:\Users\aless\source\repos\Inchino\U2-S7-L5-PW_28-03-2025\GestionaleConcerti\obj\Debug\net8.0\GestionaleConcerti.genruntimeconfig.cache
 C:\Users\aless\source\repos\Inchino\U2-S7-L5-PW_28-03-2025\GestionaleConcerti\obj\Debug\net8.0\ref\GestionaleConcerti.dll
+C:\Users\aless\source\repos\Inchino\U2-S7-L5-PW_28-03-2025\GestionaleConcerti\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

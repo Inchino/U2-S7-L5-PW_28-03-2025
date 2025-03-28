@@ -1,8 +1,12 @@
 ﻿using GestionaleConcerti.Data;
 using GestionaleConcerti.Models;
 using GestionaleConcerti.Settings;
+using GestionaleConcerti.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +17,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<IdentitySettings>(builder.Configuration.GetSection("Identity"));
 
-// Connessione al database
+// DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString)
 );
 
-// Configurazione Identity
+// Identity
 var identitySettings = builder.Configuration.GetSection("Identity").Get<IdentitySettings>();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -35,6 +39,33 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddRoles<ApplicationRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+
+// Services
+builder.Services.AddScoped<ArtistaService>();
+builder.Services.AddScoped<EventoService>();
+builder.Services.AddScoped<BigliettoService>();
+builder.Services.AddScoped<AuthService>();
+
+// JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecurityKey"]))
+    };
+});
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>();
 
@@ -63,7 +94,6 @@ using (var scope = app.Services.CreateScope())
         await userManager.AddToRoleAsync(user, "Admin");
     }
 }
-
 
 // Middleware
 if (app.Environment.IsDevelopment())
