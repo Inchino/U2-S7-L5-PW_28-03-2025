@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace GestionaleHotel.Models
+namespace GestionaleConcerti.Models
 {
     public class ApplicationRole : IdentityRole
     {

@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using GestionaleHotel.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace GestionaleHotel.Models
+namespace GestionaleConcerti.Models
 {
     public class ApplicationUserRole : IdentityUserRole<string>
     {

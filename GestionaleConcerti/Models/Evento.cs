@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EventiAPI.Models
+namespace GestionaleConcerti.Models
 {
     public class Evento
     {

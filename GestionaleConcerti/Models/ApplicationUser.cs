@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace GestionaleHotel.Models
+namespace GestionaleConcerti.Models
 {
     public class ApplicationUser : IdentityUser
     {
@@ -15,6 +15,8 @@ namespace GestionaleHotel.Models
         public DateOnly? BirthDate { get; set; }
 
         public ICollection<ApplicationUserRole> ApplicationUserRole { get; set; }
+
+        public ICollection<Biglietto> Biglietti { get; set; }
 
     }
 }

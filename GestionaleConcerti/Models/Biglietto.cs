@@ -1,7 +1,6 @@
 ﻿using System;
-using GestionaleHotel.Models;
 
-namespace EventiAPI.Models
+namespace GestionaleConcerti.Models
 {
     public class Biglietto
     {

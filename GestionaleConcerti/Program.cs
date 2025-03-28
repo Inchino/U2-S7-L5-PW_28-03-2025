@@ -1,4 +1,9 @@
+using GestionaleConcerti.Data;
+using GestionaleConcerti.Models;
+//using GestionaleConcerti.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +13,7 @@ builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // DbContext
-builder.Services.AddDbContext<HotelDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString)
 );
 
@@ -35,7 +40,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 })
     .AddRoles<ApplicationRole>()
 
-    .AddEntityFrameworkStores<HotelDbContext>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
 
     .AddDefaultTokenProviders();
 
