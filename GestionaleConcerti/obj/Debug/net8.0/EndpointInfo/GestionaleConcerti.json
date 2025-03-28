@@ -119,7 +119,7 @@
         }
       }
     },
-    "/api/Auth/register": {
+    "/api/auth/login": {
       "post": {
         "tags": [
           "Auth"
@@ -128,17 +128,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
+                "$ref": "#/components/schemas/LoginRequestDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
+                "$ref": "#/components/schemas/LoginRequestDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
+                "$ref": "#/components/schemas/LoginRequestDTO"
               }
             }
           }
@@ -150,7 +150,7 @@
         }
       }
     },
-    "/api/Auth/login": {
+    "/api/auth/register": {
       "post": {
         "tags": [
           "Auth"
@@ -159,17 +159,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/RegisterRequestDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/RegisterRequestDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/RegisterRequestDTO"
               }
             }
           }
@@ -182,6 +182,18 @@
       }
     },
     "/api/Biglietto": {
+      "get": {
+        "tags": [
+          "Biglietto"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Biglietto/tutti": {
       "get": {
         "tags": [
           "Biglietto"
@@ -433,37 +445,59 @@
         },
         "additionalProperties": false
       },
-      "LoginRequest": {
+      "LoginRequestDTO": {
+        "required": [
+          "email",
+          "password"
+        ],
         "type": "object",
         "properties": {
           "email": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "format": "email"
           },
           "password": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
       },
-      "RegisterRequest": {
+      "RegisterRequestDTO": {
+        "required": [
+          "email",
+          "name",
+          "nickname",
+          "password",
+          "surname"
+        ],
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "surname": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
+          },
+          "nickname": {
+            "minLength": 1,
+            "type": "string"
           },
           "email": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "format": "email"
           },
           "password": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "phoneNumber": {
             "type": "string",
+            "format": "tel",
             "nullable": true
           },
           "birthDate": {

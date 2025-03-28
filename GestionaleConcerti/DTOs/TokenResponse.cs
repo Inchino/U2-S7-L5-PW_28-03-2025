@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GestioneConcerti.Controllers
+namespace GestionaleConcerti.DTOs
 {
     public class TokenResponse
     {

@@ -76,14 +76,14 @@
   {
     "ContainingType": "GestionaleConcerti.Controllers.AuthController",
     "Method": "Login",
-    "RelativePath": "api/Auth/login",
+    "RelativePath": "api/auth/login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "GestionaleConcerti.Controllers.LoginRequest",
+        "Type": "GestionaleConcerti.DTOs.LoginRequestDTO",
         "IsRequired": true
       }
     ],
@@ -92,14 +92,14 @@
   {
     "ContainingType": "GestionaleConcerti.Controllers.AuthController",
     "Method": "Register",
-    "RelativePath": "api/Auth/register",
+    "RelativePath": "api/auth/register",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "GestionaleConcerti.Controllers.RegisterRequest",
+        "Type": "GestionaleConcerti.DTOs.RegisterRequestDTO",
         "IsRequired": true
       }
     ],
@@ -145,6 +145,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GestionaleConcerti.Controllers.BigliettoController",
+    "Method": "GetAllBiglietti",
+    "RelativePath": "api/Biglietto/tutti",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

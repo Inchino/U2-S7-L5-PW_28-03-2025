@@ -1,88 +1,88 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using GestionaleConcerti.DTOs;
 using GestionaleConcerti.Models;
 using GestionaleConcerti.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace GestionaleConcerti.Services
 {
     public class AuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly JwtSettings _jwtSettings;
+        private readonly JwtSettings _jwt;
 
         public AuthService(
             UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             RoleManager<ApplicationRole> roleManager,
-            IOptions<JwtSettings> jwtOptions)
+            IOptions<JwtSettings> jwt)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _roleManager = roleManager;
-            _jwtSettings = jwtOptions.Value;
+            _jwt = jwt.Value;
         }
 
-        public async Task<string?> RegisterAsync(string name, string surname, string email, string password, DateTime birthDate, string role)
+        public async Task<TokenResponse?> LoginAsync(LoginRequestDTO request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null) return null;
+
+            var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
+            if (!result.Succeeded) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+            foreach (var role in roles)
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.SecurityKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiry = DateTime.Now.AddMinutes(_jwt.ExpiresInMinutes);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwt.Issuer,
+                audience: _jwt.Audience,
+                claims: claims,
+                expires: expiry,
+                signingCredentials: creds
+            );
+
+            return new TokenResponse
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expires = expiry
+            };
+        }
+
+        public async Task<IdentityResult> RegisterAsync(RegisterRequestDTO request)
         {
             var user = new ApplicationUser
             {
-                UserName = email,
-                Email = email,
-                Name = name,
-                Surname = surname,
-                BirthDate = birthDate,
-                EmailConfirmed = true // test
+                UserName = request.Email,
+                Email = request.Email,
+                Name = request.Name,
+                Surname = request.Surname,
+                BirthDate = request.BirthDate
             };
 
-            var result = await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
-                return null;
+                return result;
 
-            if (!await _roleManager.RoleExistsAsync(role))
-                await _roleManager.CreateAsync(new ApplicationRole { Name = role });
-
-            await _userManager.AddToRoleAsync(user, role);
-
-            return await GenerateTokenAsync(user);
-        }
-
-        public async Task<string?> LoginAsync(string email, string password)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
-                return null;
-
-            return await GenerateTokenAsync(user);
-        }
-
-        private async Task<string> GenerateTokenAsync(ApplicationUser user)
-        {
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            foreach (var role in userRoles)
-                authClaims.Add(new Claim(ClaimTypes.Role, role));
-
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey));
-
-            var token = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            await _userManager.AddToRoleAsync(user, "User");
+            return result;
         }
     }
 }
