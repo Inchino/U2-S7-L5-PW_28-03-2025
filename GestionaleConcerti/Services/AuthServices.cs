@@ -70,11 +70,12 @@ namespace GestionaleConcerti.Services
         {
             var user = new ApplicationUser
             {
-                UserName = request.Email,
+                UserName = request.Nickname,
                 Email = request.Email,
                 Name = request.Name,
                 Surname = request.Surname,
-                BirthDate = request.BirthDate
+                BirthDate = request.BirthDate,
+                PhoneNumber = request.PhoneNumber
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -84,5 +85,6 @@ namespace GestionaleConcerti.Services
             await _userManager.AddToRoleAsync(user, "User");
             return result;
         }
+
     }
 }

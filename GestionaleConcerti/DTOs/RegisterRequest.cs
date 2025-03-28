@@ -25,6 +25,7 @@ namespace GestionaleConcerti.DTOs
         [Phone]
         public string PhoneNumber { get; set; }
 
+        [Required]
         public DateTime BirthDate { get; set; }
     }
 }

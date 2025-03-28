@@ -466,6 +466,7 @@
       },
       "RegisterRequestDTO": {
         "required": [
+          "birthDate",
           "email",
           "name",
           "nickname",

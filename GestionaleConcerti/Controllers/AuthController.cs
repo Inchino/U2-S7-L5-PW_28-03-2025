@@ -2,6 +2,7 @@
 using GestionaleConcerti.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GestionaleConcerti.Controllers
@@ -32,9 +33,12 @@ namespace GestionaleConcerti.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _authService.RegisterAsync(request);
             if (!result.Succeeded)
-                return BadRequest(result.Errors);
+                return BadRequest(result.Errors.Select(e => e.Description));
 
             return Ok("Registrazione completata.");
         }
