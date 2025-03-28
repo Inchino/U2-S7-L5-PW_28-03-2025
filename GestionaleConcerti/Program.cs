@@ -1,4 +1,4 @@
-using GestionaleConcerti.Data;
+﻿using GestionaleConcerti.Data;
 using GestionaleConcerti.Models;
 using GestionaleConcerti.Settings;
 using Microsoft.AspNetCore.Identity;
@@ -43,6 +43,27 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Admin
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+
+    string adminEmail = "admin@concerti.com";
+
+    var user = await userManager.FindByEmailAsync(adminEmail);
+    if (user != null && !await userManager.IsInRoleAsync(user, "Admin"))
+    {
+        if (!await roleManager.RoleExistsAsync("Admin"))
+            await roleManager.CreateAsync(new ApplicationRole { Name = "Admin" });
+
+        await userManager.AddToRoleAsync(user, "Admin");
+    }
+}
+
 
 // Middleware
 if (app.Environment.IsDevelopment())
