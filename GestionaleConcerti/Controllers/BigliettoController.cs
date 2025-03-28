@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace GestionaleConcerti.Controllers
 {
@@ -28,6 +29,14 @@ namespace GestionaleConcerti.Controllers
             return Ok(biglietti);
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("tutti")]
+        public async Task<IActionResult> GetAllBiglietti()
+        {
+            var biglietti = await _service.GetAllAsync();
+            return Ok(biglietti);
+        }
+
         [HttpPost("acquista")]
         public async Task<IActionResult> Acquista([FromBody] AcquistoBigliettoDto dto)
         {
@@ -41,9 +50,14 @@ namespace GestionaleConcerti.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _service.DeleteAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRoles = User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+
+            var result = await _service.DeleteByUserOrAdminAsync(id, userId, userRoles);
+
             if (!result)
                 return NotFound();
+
             return NoContent();
         }
     }

@@ -41,6 +41,21 @@ namespace GestionaleConcerti.Services
             };
         }
 
+        public async Task<List<BigliettoDto>> GetAllAsync()
+        {
+            return await _context.Biglietti
+                .Include(b => b.Evento)
+                .Include(b => b.User)
+                .Select(b => new BigliettoDto
+                {
+                    BigliettoId = b.BigliettoId,
+                    EventoId = b.EventoId,
+                    UserId = b.UserId,
+                    DataAcquisto = b.DataAcquisto
+                })
+                .ToListAsync();
+        }
+
         public async Task<bool> AcquistaBigliettoAsync(string userId, AcquistoBigliettoDto dto)
         {
             try
@@ -85,6 +100,23 @@ namespace GestionaleConcerti.Services
             {
                 return false;
             }
+        }
+
+        public async Task<bool> DeleteByUserOrAdminAsync(Guid bigliettoId, string userId, IEnumerable<string> userRoles)
+        {
+            var biglietto = await _context.Biglietti.FindAsync(bigliettoId);
+            if (biglietto == null)
+                return false;
+
+            bool isAdmin = userRoles.Contains("Admin");
+            bool isOwner = biglietto.UserId == userId;
+
+            if (!isAdmin && !isOwner)
+                return false;
+
+            _context.Biglietti.Remove(biglietto);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
