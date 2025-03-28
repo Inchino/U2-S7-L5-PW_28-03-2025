@@ -1,58 +1,50 @@
 using GestionaleConcerti.Data;
 using GestionaleConcerti.Models;
-//using GestionaleConcerti.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using GestionaleConcerti.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllersWithViews();
 
+// Configura Settings da appsettings.json
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<IdentitySettings>(builder.Configuration.GetSection("Identity"));
+
+// Connessione al database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString)
 );
 
-// Identity
+// Configurazione Identity
+var identitySettings = builder.Configuration.GetSection("Identity").Get<IdentitySettings>();
+
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount =
-       builder.Configuration.GetSection("Identity").GetValue<bool>("RequireConfirmedAccount");
-
-    options.Password.RequiredLength =
-        builder.Configuration.GetSection("Identity").GetValue<int>("RequiredLength");
-
-    options.Password.RequireDigit =
-        builder.Configuration.GetSection("Identity").GetValue<bool>("RequireDigit");
-
-    options.Password.RequireLowercase =
-        builder.Configuration.GetSection("Identity").GetValue<bool>("RequireLowercase");
-
-    options.Password.RequireNonAlphanumeric =
-        builder.Configuration.GetSection("Identity").GetValue<bool>("RequireNonAlphanumeric");
-
-    options.Password.RequireUppercase =
-        builder.Configuration.GetSection("Identity").GetValue<bool>("RequireUppercase");
+    options.SignIn.RequireConfirmedAccount = identitySettings.SignInRequireConfirmedAccount;
+    options.Password.RequiredLength = identitySettings.RequiredLength;
+    options.Password.RequireDigit = identitySettings.RequireDigit;
+    options.Password.RequireLowercase = identitySettings.RequireLowercase;
+    options.Password.RequireNonAlphanumeric = identitySettings.RequireNonAlphanumeric;
+    options.Password.RequireUppercase = identitySettings.RequireUppercase;
 })
-    .AddRoles<ApplicationRole>()
-
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-
-    .AddDefaultTokenProviders();
+.AddRoles<ApplicationRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -61,6 +53,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

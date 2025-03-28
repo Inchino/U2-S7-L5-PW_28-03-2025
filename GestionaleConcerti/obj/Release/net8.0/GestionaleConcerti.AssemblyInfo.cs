@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GestionaleConcerti")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b2e4aa1724a39bd9d7f0a47158556eed68921f41")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c99e21da60e2ffeaba2e6f8b1fbe10ea29d3825")]
 [assembly: System.Reflection.AssemblyProductAttribute("GestionaleConcerti")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GestionaleConcerti")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
